@@ -28,9 +28,8 @@ export class App extends Component {
       return;
     }
     this.setState(prevState => {
-      const newName = { name, number, id: nanoid() };
       return {
-        contacts: [newName, ...prevState.contacts],
+        contacts: [{ name, number, id: nanoid() }, ...prevState.contacts],
       };
     });
   };
@@ -46,13 +45,14 @@ export class App extends Component {
       };
     });
   };
+  getFilterAddContacts = ({ contacts, filter } = this.state) => {
+    return contacts.filter(({ name }) =>
+      name.toLowerCase().includes(filter.toLowerCase())
+    );
+  };
 
   render() {
-    const { contacts, filter } = this.state;
-    const filterUpdate = contacts.filter(item => {
-      const hasFilter = item.name.toLowerCase().includes(filter.toLowerCase());
-      return hasFilter;
-    });
+    const { filter } = this.state;
 
     return (
       <Wrapper>
@@ -62,10 +62,10 @@ export class App extends Component {
         <h2>Contacts</h2>
         <Filter filterValue={filter} updateFilter={this.onFilter} />
 
-        {filterUpdate.length > 0 && (
+        {this.getFilterAddContacts().length > 0 && (
           <ItemWrapper>
             <ContactsList
-              contacts={filterUpdate}
+              contacts={this.getFilterAddContacts()}
               onDelete={this.deleteContact}
             />
           </ItemWrapper>
@@ -75,3 +75,7 @@ export class App extends Component {
     );
   }
 }
+
+// const filterUpdate = contacts.filter(item => {
+//   return item.name.toLowerCase().includes(filter.toLowerCase());
+// });
