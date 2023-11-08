@@ -1,8 +1,11 @@
 import { Component } from 'react';
-import { Form } from './contactForm/ContactForm';
-import { ContactsList } from './contactsList/ContactsList';
 import { nanoid } from 'nanoid';
+
 import { Filter } from './filter/FormFilter';
+import { ContactForm } from './contactForm/ContactForm';
+import { ContactsList } from './contactsList/ContactsList';
+import { ItemWrapper, Wrapper } from './App.styled';
+import { GlobalStyle } from 'GlobalStaled';
 
 export class App extends Component {
   state = {
@@ -16,16 +19,14 @@ export class App extends Component {
   };
 
   formSubmitHandler = ({ name, number }) => {
-    const upperName = name.toUpperCase();
-    const upperArrContacts = this.state.contacts.some(
-      contacts => contacts.name.toUpperCase() === upperName
-    );
-
-    if (upperArrContacts) {
+    if (
+      this.state.contacts.some(
+        contacts => contacts.name.toUpperCase() === name.toUpperCase()
+      )
+    ) {
       alert(`${name} is already  in contact`);
       return;
     }
-
     this.setState(prevState => {
       const newName = { name, number, id: nanoid() };
       return {
@@ -37,6 +38,7 @@ export class App extends Component {
   onFilter = newFilter => {
     this.setState({ filter: newFilter });
   };
+
   deleteContact = contactId => {
     this.setState(prevState => {
       return {
@@ -44,29 +46,32 @@ export class App extends Component {
       };
     });
   };
+
   render() {
     const { contacts, filter } = this.state;
-
     const filterUpdate = contacts.filter(item => {
       const hasFilter = item.name.toLowerCase().includes(filter.toLowerCase());
       return hasFilter;
     });
+
     return (
-      <div>
+      <Wrapper>
         <h1>Phone book</h1>
-        <Form submit={this.formSubmitHandler} />
+        <ContactForm submit={this.formSubmitHandler} />
 
         <h2>Contacts</h2>
         <Filter filterValue={filter} updateFilter={this.onFilter} />
+
         {filterUpdate.length > 0 && (
-          <ul>
+          <ItemWrapper>
             <ContactsList
               contacts={filterUpdate}
               onDelete={this.deleteContact}
             />
-          </ul>
+          </ItemWrapper>
         )}
-      </div>
+        <GlobalStyle />
+      </Wrapper>
     );
   }
 }
